@@ -16,7 +16,7 @@ export const LIBRARIES = [
     id: 'gerstein',
     name: 'Gerstein Science',
     shortName: 'Gerstein',
-    address: '9 King's College Circle',
+    address: "9 King's College Circle",
     hours: '8:30 AM – 11:45 PM',
     image: null,
     floors: [1, 2, 3],

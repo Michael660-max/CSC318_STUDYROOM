@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Bell, BellOff, Clock, ChevronRight, Check } from 'lucide-react';
+import { useEffect } from 'react';
+import { Bell, BellOff, Clock, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ROOMS, LIBRARIES } from '../data/mockData';
 import Header from '../components/ui/Header';
@@ -59,9 +60,9 @@ export default function NotificationsScreen() {
   const { notifications, waitlistRooms, removeNotificationRequest, markNotificationsRead } = useApp();
 
   // Mark all as read on mount
-  useState(() => {
+  useEffect(() => {
     markNotificationsRead();
-  });
+  }, [markNotificationsRead]);
 
   const systemNotifs = [
     {
