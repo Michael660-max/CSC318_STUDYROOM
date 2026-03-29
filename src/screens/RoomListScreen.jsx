@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { LayoutList, Map, SlidersHorizontal, Users, ChevronDown } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { LayoutList, Map, SlidersHorizontal, Users } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ROOMS, LIBRARIES } from '../data/mockData';
 import Header from '../components/ui/Header';
@@ -58,14 +58,16 @@ function FloorMap({ rooms, libraryId }) {
 
 export default function RoomListScreen() {
   const { libraryId } = useParams();
-  const [searchParams] = useSearchParams();
-  const { selectedLibrary, setSelectedLibrary } = useApp();
+  const { selectedLibrary } = useApp();
   const [view, setView] = useState('list');
   const [activeFilter, setActiveFilter] = useState('All');
   const [showFilterPanel, setShowFilterPanel] = useState(false);
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  const library = selectedLibrary || LIBRARIES.find(l => l.id === libraryId) || LIBRARIES[0];
+  const libraryFromRoute = libraryId ? LIBRARIES.find(l => l.id === libraryId) : null;
+  const library = (selectedLibrary && (!libraryId || selectedLibrary.id === libraryId))
+    ? selectedLibrary
+    : libraryFromRoute || LIBRARIES[0];
   const rooms = ROOMS[library.id] || [];
 
   const filtered = useMemo(() => {
@@ -73,9 +75,10 @@ export default function RoomListScreen() {
       if (activeFilter === 'Available' && room.status !== 'available') return false;
       if (activeFilter === 'Group' && room.type !== 'group') return false;
       if (activeFilter === 'Individual' && room.type !== 'individual') return false;
+      if (statusFilter !== 'all' && room.status !== statusFilter) return false;
       return true;
     });
-  }, [rooms, activeFilter]);
+  }, [rooms, activeFilter, statusFilter]);
 
   const counts = {
     available: rooms.filter(r => r.status === 'available').length,
@@ -135,12 +138,50 @@ export default function RoomListScreen() {
         ))}
         <button
           onClick={() => setShowFilterPanel(!showFilterPanel)}
-          className="flex-shrink-0 flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600"
+          className={`flex-shrink-0 flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full border ${
+            showFilterPanel
+              ? 'bg-blue-50 text-blue-900 border-blue-200'
+              : 'border-gray-200 text-gray-600'
+          }`}
         >
           <SlidersHorizontal size={12} />
           Filter
         </button>
       </div>
+
+      {showFilterPanel && (
+        <div className="bg-white border-b border-gray-100 px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Status</p>
+            <button
+              onClick={() => setStatusFilter('all')}
+              className="text-[11px] font-medium text-blue-800"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="flex gap-2">
+            {[
+              { key: 'all', label: 'All' },
+              { key: 'available', label: 'Available' },
+              { key: 'reserved', label: 'Reserved' },
+              { key: 'occupied', label: 'Occupied' },
+            ].map(option => (
+              <button
+                key={option.key}
+                onClick={() => setStatusFilter(option.key)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                  statusFilter === option.key
+                    ? 'bg-blue-900 text-white border-blue-900'
+                    : 'bg-white text-gray-600 border-gray-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Results count */}
       <div className="px-4 py-2">

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, QrCode, ChevronRight, Clock, MapPin } from 'lucide-react';
+import { BookOpen, QrCode, Clock, MapPin } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import Header from '../components/ui/Header';
 import BottomNav from '../components/ui/BottomNav';

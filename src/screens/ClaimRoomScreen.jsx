@@ -15,11 +15,25 @@ export default function ClaimRoomScreen() {
   const [step, setStep] = useState(0);
   const [groupSize, setGroupSize] = useState(1);
 
-  const library = selectedLibrary || LIBRARIES.find(l => l.id === libraryId);
-  const rooms = ROOMS[libraryId] || [];
+  const library = selectedLibrary?.id === libraryId
+    ? selectedLibrary
+    : LIBRARIES.find(l => l.id === libraryId);
+  const rooms = library ? (ROOMS[library.id] || []) : [];
   const room = selectedRoom?.id === roomId ? selectedRoom : rooms.find(r => r.id === roomId);
 
-  if (!room || !library) return null;
+  if (!room || !library) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <Header title="Claim Room" showNotif={false} />
+        <div className="flex-1 flex items-center justify-center px-6 text-center">
+          <div>
+            <p className="text-base font-semibold text-gray-700">Room not found</p>
+            <p className="text-sm text-gray-400 mt-1">Go back and choose an available room.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleClaim = () => {
     setStep(1);

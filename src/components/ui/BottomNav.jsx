@@ -28,15 +28,15 @@ export default function BottomNav() {
             <button
               key={path}
               onClick={() => navigate(path)}
-              className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
+              className={`relative flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
                 active ? 'text-blue-900' : 'text-gray-400'
               }`}
             >
               <div className="relative">
                 <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
                 {isAlert && unread > 0 && (
-                  <span className="absolute -top-1 -right-1.5 w-3.5 h-3.5 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                    {unread}
+                  <span className="absolute -top-1 -right-2 min-w-3.5 h-3.5 px-1 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center leading-none">
+                    {unread > 9 ? '9+' : unread}
                   </span>
                 )}
               </div>

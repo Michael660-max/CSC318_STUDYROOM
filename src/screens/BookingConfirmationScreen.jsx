@@ -8,7 +8,7 @@ export default function BookingConfirmationScreen() {
   const { bookingId } = useParams();
   const { bookingHistory } = useApp();
 
-  const booking = bookingHistory.find(b => b.id === bookingId) || bookingHistory[0];
+  const booking = bookingHistory.find(b => b.id === bookingId);
 
   if (!booking) {
     return (

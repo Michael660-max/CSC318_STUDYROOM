@@ -26,8 +26,10 @@ export default function BookRoomScreen() {
   const navigate = useNavigate();
   const { selectedRoom, selectedLibrary, createBooking } = useApp();
 
-  const library = selectedLibrary || LIBRARIES.find(l => l.id === libraryId);
-  const rooms = ROOMS[libraryId] || [];
+  const library = selectedLibrary?.id === libraryId
+    ? selectedLibrary
+    : LIBRARIES.find(l => l.id === libraryId);
+  const rooms = library ? (ROOMS[library.id] || []) : [];
   const room = selectedRoom?.id === roomId ? selectedRoom : rooms.find(r => r.id === roomId);
 
   const days = getDayDates();
@@ -37,7 +39,19 @@ export default function BookRoomScreen() {
   const [groupSize, setGroupSize] = useState(1);
   const [step, setStep] = useState('form'); // 'form' | 'review' | 'confirmed'
 
-  if (!room || !library) return null;
+  if (!room || !library) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <Header title="Book Room" showNotif={false} />
+        <div className="flex-1 flex items-center justify-center px-6 text-center">
+          <div>
+            <p className="text-base font-semibold text-gray-700">Room not found</p>
+            <p className="text-sm text-gray-400 mt-1">Go back and choose a room again.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const canProceed = selectedTime !== null;
 

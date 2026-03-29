@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Users, Clock, Zap, BookOpen, Bell, BellOff, Monitor, Phone, Power, PenLine, Info } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -19,11 +18,11 @@ export default function RoomDetailsScreen() {
   const navigate = useNavigate();
   const { selectedRoom, selectedLibrary, addNotificationRequest, removeNotificationRequest, waitlistRooms } = useApp();
 
-  const library = selectedLibrary || LIBRARIES.find(l => l.id === libraryId);
-  const rooms = ROOMS[libraryId] || [];
+  const library = selectedLibrary?.id === libraryId
+    ? selectedLibrary
+    : LIBRARIES.find(l => l.id === libraryId);
+  const rooms = library ? (ROOMS[library.id] || []) : [];
   const room = selectedRoom?.id === roomId ? selectedRoom : rooms.find(r => r.id === roomId);
-
-  const [showInfo, setShowInfo] = useState(false);
 
   if (!room || !library) {
     return (
@@ -49,7 +48,7 @@ export default function RoomDetailsScreen() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header title={room.name} subtitle={library.name} />
 
-      <div className="flex-1 pb-28 overflow-y-auto">
+      <div className="flex-1 pb-72 overflow-y-auto">
         {/* Status hero */}
         <div className={`${cfg.bg} border-b ${cfg.border} px-5 py-5`}>
           <div className="flex items-center justify-between mb-3">
@@ -158,7 +157,7 @@ export default function RoomDetailsScreen() {
       </div>
 
       {/* Action buttons */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2 z-40">
+      <div className="fixed bottom-[68px] left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-100 px-4 py-4 space-y-2 z-40">
         {canClaim && (
           <button
             onClick={() => navigate(`/claim/${libraryId}/${room.id}`)}
@@ -194,7 +193,7 @@ export default function RoomDetailsScreen() {
             {isWaitlisted ? 'Remove Alert' : 'Notify When Available'}
           </button>
         )}
-        {(canClaim || canBook) && room.status === 'occupied' === false && (
+        {(canClaim || canBook) && room.status !== 'occupied' && (
           <button
             onClick={toggleWaitlist}
             className="w-full text-center text-xs text-gray-400 py-1"
